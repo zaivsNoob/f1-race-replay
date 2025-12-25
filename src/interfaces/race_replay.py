@@ -14,8 +14,8 @@ from src.ui_components import (
 )
 
 
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1200
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 SCREEN_TITLE = "F1 Race Replay"
 
 class F1RaceReplayWindow(arcade.Window):
@@ -24,6 +24,7 @@ class F1RaceReplayWindow(arcade.Window):
                  left_ui_margin=340, right_ui_margin=260, total_laps=None, visible_hud=True):
         # Set resizable to True so the user can adjust mid-sim
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, title, resizable=True)
+        self.maximize()
 
         self.frames = frames
         self.track_statuses = track_statuses
