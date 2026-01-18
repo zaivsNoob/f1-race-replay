@@ -10,6 +10,7 @@ from src.ui_components import (
     RaceProgressBarComponent,
     RaceControlsComponent,
     ControlsPopupComponent,
+    SessionInfoComponent,
     extract_race_events,
     build_track_from_example_lap,
     draw_finish_line
@@ -24,7 +25,8 @@ PLAYBACK_SPEEDS = [0.1, 0.2, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 2
 class F1RaceReplayWindow(arcade.Window):
     def __init__(self, frames, track_statuses, example_lap, drivers, title,
                  playback_speed=1.0, driver_colors=None, circuit_rotation=0.0,
-                 left_ui_margin=340, right_ui_margin=260, total_laps=None, visible_hud=True):
+                 left_ui_margin=340, right_ui_margin=260, total_laps=None, visible_hud=True,
+                 session_info=None):
         # Set resizable to True so the user can adjust mid-sim
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, title, resizable=True)
         self.maximize()
@@ -77,6 +79,19 @@ class F1RaceReplayWindow(arcade.Window):
             center_y=100,
             visible = visible_hud
         )
+        
+        # Session info banner component
+        self.session_info_comp = SessionInfoComponent(visible=visible_hud)
+        if session_info:
+            self.session_info_comp.set_info(
+                event_name=session_info.get('event_name', ''),
+                circuit_name=session_info.get('circuit_name', ''),
+                country=session_info.get('country', ''),
+                year=session_info.get('year'),
+                round_num=session_info.get('round'),
+                date=session_info.get('date', ''),
+                total_laps=total_laps
+            )
 
         self.is_rewinding = False
         self.is_forwarding = False
@@ -447,6 +462,9 @@ class F1RaceReplayWindow(arcade.Window):
         
         # Race playback control buttons
         self.race_controls_comp.draw(self)
+        
+        # Session info banner (top of screen)
+        self.session_info_comp.draw(self)
 
         # Draw Controls popup box
         self.controls_popup_comp.draw(self)
@@ -535,6 +553,8 @@ class F1RaceReplayWindow(arcade.Window):
                 self.controls_popup_comp.show_over(left_pos, top_pos)
         elif symbol == arcade.key.B:
             self.progress_bar_comp.toggle_visibility() # toggle progress bar visibility
+        elif symbol == arcade.key.I:
+            self.session_info_comp.toggle_visibility() # toggle session info banner
 
     def on_key_release(self, symbol: int, modifiers: int):
         if symbol == arcade.key.RIGHT:
