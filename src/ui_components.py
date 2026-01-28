@@ -128,6 +128,8 @@ class LeaderboardComponent(BaseComponent):
         self.show_neighbor_gaps = False
         self.gap_toggle_rect = None
         self.neighbor_toggle_rect = None
+        # Reuse a single Text object for gap rendering to avoid reallocating each frame
+        self._gap_text = arcade.Text("", 0, 0, arcade.color.LIGHT_GRAY, 12, anchor_x="right", anchor_y="top")
         self._tyre_textures = {}
         # Import the tyre textures from the images/tyres folder (all files)
         tyres_folder = os.path.join("images", "tyres")
@@ -242,7 +244,12 @@ class LeaderboardComponent(BaseComponent):
                 gap_x = right_x - 36
                 if 'gap_text' in locals() and gap_text:
                     gap_color = arcade.color.BLACK if code in self.selected else arcade.color.LIGHT_GRAY
-                    arcade.Text(gap_text, gap_x, top_y, gap_color, 12, anchor_x="right", anchor_y="top").draw()
+                    # Update and draw the reusable gap Text object
+                    self._gap_text.text = gap_text
+                    self._gap_text.x = gap_x
+                    self._gap_text.y = top_y
+                    self._gap_text.color = gap_color
+                    self._gap_text.draw()
 
             # Tyre Icons
             tyre_texture = self._tyre_textures.get(str(pos.get("tyre", "?")).upper())
